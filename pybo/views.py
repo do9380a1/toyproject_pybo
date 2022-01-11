@@ -1,3 +1,4 @@
+from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from .models import Question, Answer
@@ -9,8 +10,15 @@ def index(request):
     """
     pybo 목록 출력
     """
+    # 입력 인자
+    page = request.GET.get('page', '1')
+    # 조회
     question_list = Question.objects.order_by('-create_date')
-    context = {'question_list': question_list}
+    # 페이징 처리
+    paginator = Paginator(question_list, 10)
+    page_obj = paginator.get_page(page)
+
+    context = {'question_list': page_obj}
     # return HttpResponse("안녕하세요 Pybo에 오신것을 환영합니다.")
     return render(request, 'pybo/question_list.html', context)
 
